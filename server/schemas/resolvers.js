@@ -33,8 +33,9 @@ const resolvers = {
             
         },
         login: async (parent, { email, password }) => {
-            const user = await User.findOne ({ email });
-            console.log(user)
+            console.log(email)
+            const user = await User.findOne({email});
+           
             if (!user) {
                 throw new AuthenticationError("Can't find this user");
             }
@@ -45,13 +46,23 @@ const resolvers = {
             const token = signToken(user);
             return { token, user}
         },
-        saveBook: async (parent, { bookId }, context) => {
-            const updatedUser = await User.findOneAndUpdate(
-                { _id: context.user._id },
-                { $addToSet: { savedBooks: bookId }},
-                { new: true}
-            ).populate('savedBooks');
-           return updatedUser;
+        saveBook: async (parent,  bookId , context) => {
+            console.log(context.user, bookId)
+            if (context.user) {
+                const updatedUser = await User.findOneAndUpdate(
+                    { _id: context.user._id },
+                    { $push: { savedBooks: bookId }},
+                    { new: true}
+                )//.populate('savedBooks');
+               return updatedUser;
+            }
+            throw new AuthenticationError('Something went wrong');
+        //     const updatedUser = await User.findOneAndUpdate(
+        //         { _id: context.user._id },
+        //         { $addToSet: { savedBooks: bookId }},
+        //         { new: true}
+        //     )//.populate('savedBooks');
+        //    return updatedUser;
         },
         removeBook: async (parent, { bookId }, context) => {
             const updateUser = await User.findOneAndUpdate(
