@@ -47,7 +47,7 @@ const resolvers = {
             return { token, user}
         },
         saveBook: async (parent,  bookId , context) => {
-            console.log(context.user, bookId)
+            //console.log(context.user, bookId)
             if (context.user) {
                 const updatedUser = await User.findOneAndUpdate(
                     { _id: context.user._id },
@@ -64,13 +64,15 @@ const resolvers = {
         //     )//.populate('savedBooks');
         //    return updatedUser;
         },
-        removeBook: async (parent, { bookId }, context) => {
-            const updateUser = await User.findOneAndUpdate(
+        removeBook: async (parent,  bookId , context) => {
+            console.log(context.user, bookId)
+            const updatedUser = await User.findOneAndUpdate(
                 { _id: context.user._id },
                 { $pull: { savedBooks: bookId }},
                 { new: true}
-            ).polulate('savedBooks');
+            )//.populate('savedBooks');
             return updatedUser;
+            throw new AuthenticationError('Something went wrong');
         }
     }
 }
